@@ -30,7 +30,8 @@
       const apiKey = 'GcutoH6iGgDCNdvz3L8c4cCFwzLpAAZr';
 
       const vectorTileServiceUrl = 'https://api.os.uk/maps/vector/v1/vts';
-      const featuresServiceUrl = 'https://api.os.uk/features/v1/wfs';
+      const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+      const featuresServiceUrl = `${corsProxy}https://api.os.uk/features/v1/wfs`;
 
       require([
         "esri/Map",
@@ -56,10 +57,7 @@
         });
 
         const airportLayer = new FeatureLayer({
-          url: `${featuresServiceUrl}?service=WFS&version=2.0.0&request=GetFeature&typeNames=Transportation.Airport`,
-          fetchOptions: {
-            mode: 'no-cors'
-          }
+          url: `${featuresServiceUrl}?service=WFS&version=2.0.0&request=GetFeature&typeNames=Transportation.Airport`
         });
 
         const map = new Map({
