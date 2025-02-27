@@ -56,7 +56,10 @@
         });
 
         const airportLayer = new FeatureLayer({
-          url: `${featuresServiceUrl}?service=WFS&version=2.0.0&request=GetFeature&typeNames=Transportation.Airport`
+          url: `${featuresServiceUrl}?service=WFS&version=2.0.0&request=GetFeature&typeNames=Transportation.Airport`,
+          fetchOptions: {
+            mode: 'no-cors'
+          }
         });
 
         const map = new Map({
