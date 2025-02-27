@@ -29,17 +29,19 @@
 
       const apiKey = 'GcutoH6iGgDCNdvz3L8c4cCFwzLpAAZr';
 
-      const serviceUrl = 'https://api.os.uk/maps/vector/v1/vts';
+      const vectorTileServiceUrl = 'https://api.os.uk/maps/vector/v1/vts';
+      const featuresServiceUrl = 'https://api.os.uk/features/v1/wfs';
 
       require([
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/VectorTileLayer",
+        "esri/layers/FeatureLayer",
         "esri/config"
-      ], function(Map, MapView, VectorTileLayer, esriConfig) {
+      ], function(Map, MapView, VectorTileLayer, FeatureLayer, esriConfig) {
         // Add the 'key' and 'srs' options to the request URL before it is sent.
         esriConfig.request.interceptors.push({
-          urls: serviceUrl,
+          urls: [vectorTileServiceUrl, featuresServiceUrl],
           before: function(params) {
             if(! params.requestOptions.query ) {
               params.requestOptions.query = {};
@@ -50,18 +52,22 @@
         });
 
         const tileLayer = new VectorTileLayer({
-          url: serviceUrl
+          url: vectorTileServiceUrl
+        });
+
+        const airportLayer = new FeatureLayer({
+          url: `${featuresServiceUrl}?service=WFS&version=2.0.0&request=GetFeature&typeNames=Transportation.Airport`
         });
 
         const map = new Map({
-          layers: [ tileLayer ]
+          layers: [ tileLayer, airportLayer ]
         });
 
         const view = new MapView({
           container: "viewDiv",
           map: map,
-          zoom: 13,
-          center: [ -2.968, 54.425 ],
+          zoom: 6,
+          center: [ -1.5, 54.0 ], // Centered on the UK
           constraints: {
             minZoom: 6,
             maxZoom: 18,
