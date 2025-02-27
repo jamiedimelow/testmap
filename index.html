@@ -1,30 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>OS Vector Tiles Map</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>OS Vector Tile API | Basic Map (EPSG:3857) | ArcGIS Maps SDK for JavaScript</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/OrdnanceSurvey/os-api-branding@0.3.1/os-api-branding.css" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
     <style>
-        #map {
-            width: 100%;
-            height: 100vh;
-        }
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+      .esri-ui .esri-attribution {
+        display: none;
+      }
     </style>
-</head>
-<body>
-    <div id="map"></div>
-    <script>
-        // Initialize the map
-        const map = L.map('map').setView([53.4808, -2.2426], 13); // Centered on Manchester, UK
+  </head>
+  <body>
+    <div id="viewDiv"></div>
 
-        // Add OS Vector Tiles layer
-        L.tileLayer('https://api.os.uk/maps/vector/v1/vts/tile/{z}/{x}/{y}.pbf?key=GcutoH6iGgDCNdvz3L8c4cCFwzLpAAZr', {
-            attribution: '&copy; Ordnance Survey',
-            maxZoom: 20,
-            tileSize: 512,
-            zoomOffset: -1
-        }).addTo(map);
+    <script src="https://cdn.jsdelivr.net/gh/OrdnanceSurvey/os-api-branding@0.3.1/os-api-branding.js" data-div="viewDiv" data-prefix="Powered by Esri"></script>
+    <script src="https://js.arcgis.com/4.30/"></script>
+    <script>
+
+      const apiKey = 'GcutoH6iGgDCNdvz3L8c4cCFwzLpAAZr';
+
+      const serviceUrl = 'https://api.os.uk/maps/vector/v1/vts';
+
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/VectorTileLayer",
+        "esri/config"
+      ], function(Map, MapView, VectorTileLayer, esriConfig) {
+        // Add the 'key' and 'srs' options to the request URL before it is sent.
+        esriConfig.request.interceptors.push({
+          urls: serviceUrl,
+          before: function(params) {
+            if(! params.requestOptions.query ) {
+              params.requestOptions.query = {};
+            }
+            params.requestOptions.query.key = apiKey;
+            params.requestOptions.query.srs = 3857;
+          }
+        });
+
+        const tileLayer = new VectorTileLayer({
+          url: serviceUrl
+        });
+
+        const map = new Map({
+          layers: [ tileLayer ]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          zoom: 13,
+          center: [ -2.968, 54.425 ],
+          constraints: {
+            minZoom: 6,
+            maxZoom: 18,
+            rotationEnabled: false
+          }
+        });
+      });
+
     </script>
-</body>
+
+  </body>
 </html>
